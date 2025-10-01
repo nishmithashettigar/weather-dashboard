@@ -37,7 +37,7 @@ header {
 }
 
 h1 {
-  font-size: 1.4rem;
+  font-size: clamp(1.2rem, 4vw, 1.8rem);
 }
 
 .controls {
@@ -92,14 +92,14 @@ input[type="search"] {
 }
 
 .temp {
-  font-size: 3.4rem;
+  font-size: clamp(2rem, 6vw, 3.4rem);
   font-weight: 600;
   transition: transform 0.3s;
 }
 
 .icon {
-  width: 96px;
-  height: 96px;
+  width: clamp(50px, 10vw, 96px);
+  height: clamp(50px, 10vw, 96px);
   transition: transform 0.3s;
 }
 
@@ -120,8 +120,9 @@ input[type="search"] {
 .forecast {
   display: flex;
   gap: 10px;
-  overflow: auto;
+  overflow-x: auto;
   padding-top: 8px;
+  scroll-behavior: smooth;
 }
 
 .day {
@@ -158,14 +159,52 @@ input[type="search"] {
   100% { transform: scale(1); }
 }
 
+/* Responsive Media Queries */
+
 @media (max-width: 900px) {
-  .grid { grid-template-columns: 1fr; }
-  .right { order: 2; }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .right {
+    order: 2;
+  }
 }
 
-@media (max-width: 500px) {
-  .search { flex-direction: column; gap: 10px; width: 100%; }
-  input[type="search"], #searchBtn { width: 100%; }
-  .controls button { flex: 1 1 48%; margin-top: 6px; }
+@media (max-width: 600px) {
+  .main-weather {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .temp {
+    font-size: clamp(1.5rem, 8vw, 2.8rem);
+  }
+  .icon {
+    width: 70px;
+    height: 70px;
+  }
+  .details {
+    grid-template-columns: 1fr;
+  }
+  .forecast {
+    gap: 6px;
+  }
 }
 
+@media (max-width: 400px) {
+  .search {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  input[type="search"], #searchBtn {
+    width: 100%;
+  }
+  .controls button {
+    flex: 1 1 100%;
+    margin-top: 6px;
+  }
+  .day {
+    min-width: 80px;
+    padding: 8px;
+  }
+}
