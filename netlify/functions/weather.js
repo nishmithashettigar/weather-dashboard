@@ -1,5 +1,6 @@
 const fetch = require('node-fetch');
 
+
 exports.handler = async function(event, context) {
   const { city, units } = event.queryStringParameters || {};
   const apiKey = process.env.OPENWEATHER_KEY;
