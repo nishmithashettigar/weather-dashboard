@@ -1,4 +1,3 @@
-const OPENWEATHER_API_KEY = '2bc139a8d3fe6e1f41434c49e6830089'; 
 let units = 'metric';
 let currentForecastData = null;
 
@@ -43,31 +42,17 @@ function setBackground(condition) {
   document.body.style.background = gradient;
 }
 
-// Reverse geocoding for city name
-async function fetchCityName(lat, lon) {
-  try {
-    const res = await fetch(`https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${OPENWEATHER_API_KEY}`);
-    const data = await res.json();
-    if (data && data.length > 0) return `${data[0].name}, ${data[0].country}`;
-  } catch (err) {}
-  return "Unknown Location";
-}
-
-// Fetch weather by coordinates
-async function fetchWeatherByCoords(lat, lon) {
+// Fetch weather from Netlify function
+async function fetchWeather(city) {
   setStatus('Fetching weather…', true);
   try {
-    const currentUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=${units}&appid=${OPENWEATHER_API_KEY}`;
-    const forecastUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${OPENWEATHER_API_KEY}`;
-    const [currentRes, forecastRes] = await Promise.all([fetch(currentUrl), fetch(forecastUrl)]);
-    
-    if (!currentRes.ok) throw new Error('Current weather fetch failed');
-    if (!forecastRes.ok) throw new Error('Forecast fetch failed');
+    const res = await fetch(`/.netlify/functions/weather?city=${city}&units=${units}`);
+    const data = await res.json();
+    if (data.cod && data.cod !== 200) throw new Error(data.message || 'Place not found');
 
-    const currentData = await currentRes.json();
-    const forecastData = await forecastRes.json();
-    currentForecastData = forecastData;
-    await renderWeather(currentData, forecastData);
+    currentForecastData = data.forecast;
+    renderWeather(data.current, data.forecast);
+    setStatus('', false);
   } catch (err) {
     setStatus('Unable to fetch weather', false);
     console.error(err);
@@ -75,18 +60,13 @@ async function fetchWeatherByCoords(lat, lon) {
 }
 
 // Render weather UI
-async function renderWeather(current, forecast) {
+function renderWeather(current, forecast) {
   weatherContent.classList.remove('hidden');
-  setStatus('', false);
-
-  const cityName = await fetchCityName(current.coord.lat, current.coord.lon);
-  placeEl.textContent = cityName;
-
+  placeEl.textContent = current.cityName || "Unknown Location";
   tempEl.textContent = `${Math.round(current.main.temp)}°${units === 'metric' ? 'C' : 'F'}`;
   descEl.textContent = current.weather[0].description;
   iconEl.src = iconUrl(current.weather[0].icon);
   iconEl.alt = current.weather[0].description;
-
   setBackground(current.weather[0].main);
 
   // Current weather details
@@ -129,32 +109,11 @@ async function renderWeather(current, forecast) {
 }
 
 // Search handler
-searchForm.addEventListener('submit', async function(e) {
+searchForm.addEventListener('submit', function(e) {
   e.preventDefault();
   const value = searchInput.value.trim();
   if (!value) return;
-
-  if (value.includes(',')) {
-    const [lat, lon] = value.split(',').map(Number);
-    if (!isNaN(lat) && !isNaN(lon)) {
-      await fetchWeatherByCoords(lat, lon);
-      return;
-    }
-  }
-
-  setStatus('Fetching weather…', true);
-  try {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${value}&units=${units}&appid=${OPENWEATHER_API_KEY}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (res.ok && data.coord) {
-      await fetchWeatherByCoords(data.coord.lat, data.coord.lon);
-    } else {
-      setStatus('Place not found', false);
-    }
-  } catch {
-    setStatus('Place not found', false);
-  }
+  fetchWeather(value);
 });
 
 // Use my location
@@ -162,31 +121,19 @@ locBtn.onclick = function () {
   if (navigator.geolocation) {
     setStatus('Locating…', true);
     navigator.geolocation.getCurrentPosition(
-      async pos => await fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude),
+      async pos => fetchWeather(`${pos.coords.latitude},${pos.coords.longitude}`),
       () => setStatus('Unable to get location', false)
     );
-  } else {
-    setStatus('Geolocation not supported', false);
-  }
+  } else setStatus('Geolocation not supported', false);
 };
 
 // Toggle unit
-unitToggle.onclick = async function () {
+unitToggle.onclick = function () {
   units = units === 'metric' ? 'imperial' : 'metric';
-  if (currentForecastData && currentForecastData.city && currentForecastData.city.coord) {
-    await fetchWeatherByCoords(
-      currentForecastData.city.coord.lat,
-      currentForecastData.city.coord.lon
-    );
-  }
+  if (currentForecastData) fetchWeather(searchInput.value);
 };
 
 // Travel planner
-function getForecastForDate(dateStr) {
-  if (!currentForecastData) return null;
-  return currentForecastData.list.find(item => item.dt_txt.startsWith(dateStr)) || null;
-}
-
 travelDateInput.onchange = function () {
   const date = this.value;
   if (!date) {
@@ -194,10 +141,10 @@ travelDateInput.onchange = function () {
     return;
   }
   if (!currentForecastData) {
-    travelContent.textContent = `No forecast data available. Search for a location first.`;
+    travelContent.textContent = 'No forecast data available. Search for a location first.';
     return;
   }
-  const forecast = getForecastForDate(date);
+  const forecast = currentForecastData.list.find(item => item.dt_txt.startsWith(date));
   if (!forecast) {
     travelContent.textContent = `No forecast available for ${date}.`;
     return;
