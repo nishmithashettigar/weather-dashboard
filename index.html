@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Weather Dashboard | Travel Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header>
+      <h1>Weather Dashboard & Travel Planner</h1>
+      <div class="controls">
+        <form id="searchForm" onsubmit="return false;">
+          <input type="search" id="searchInput" placeholder="Enter city or lat,lon">
+          <button id="searchBtn" class="btn">Search</button>
+        </form>
+        <button id="locBtn" class="btn">Use My Location</button>
+        <button id="unitToggle" class="btn">C/F</button>
+      </div>
+    </header>
+    <main class="grid">
+      <section class="left">
+        <div id="current" class="card">
+          <div id="status"></div>
+          <span id="loader" class="loader"></span>
+          <div id="weatherContent" class="hidden">
+            <div class="main-weather">
+              <div>
+                <div id="place"></div>
+                <div id="temperature" class="temp"></div>
+                <div id="desc"></div>
+              </div>
+              <img id="icon" class="icon" src="weather.png" alt="weather icon">
+            </div>
+            <div class="details" id="details"></div>
+          </div>
+          <h3>Forecast</h3>
+          <div id="forecast" class="forecast"></div>
+        </div>
+      </section>
+      <section class="right">
+        <div id="travelPlanner" class="card">
+          <h3>Travel Planner</h3>
+          <input type="date" id="travelDate">
+          <div id="travelContent">Select a date to see travel suggestions.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
+
