@@ -21,7 +21,6 @@ body {
   justify-content: center;
   padding: 24px;
   transition: background 1s ease-in-out;
-  /* CRITICAL FIX for mobile padding issue */
   overflow-x: hidden; 
 }
 
@@ -172,6 +171,9 @@ input[type="search"] {
 
 @media (max-width: 600px) {
   body {
+    padding: 0;
+  }
+  .app {
     padding: 16px;
   }
   header {
@@ -203,11 +205,20 @@ input[type="search"] {
   }
   .forecast {
     gap: 6px;
+    padding-right: 16px; 
+    padding-left: 16px; 
+    margin: 0 -16px; 
+  }
+  .card:has(.forecast) {
+    padding: 14px 0 14px 0;
   }
 }
 
 @media (max-width: 400px) {
   body {
+    padding: 0;
+  }
+  .app {
     padding: 16px;
   }
   header {
