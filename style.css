@@ -171,6 +171,22 @@ input[type="search"] {
 }
 
 @media (max-width: 600px) {
+  body {
+    padding: 16px;
+  }
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .controls {
+    width: 100%;
+  }
+  .card {
+    padding: 14px;
+    margin-bottom: 12px;
+  }
   .main-weather {
     flex-direction: column;
     align-items: flex-start;
@@ -191,20 +207,31 @@ input[type="search"] {
 }
 
 @media (max-width: 400px) {
+  header {
+    align-items: center;
+    text-align: center;
+  }
+  h1 {
+    width: 100%;
+  }
   .search {
     flex-direction: column;
     gap: 10px;
     width: 100%;
   }
-  input[type="search"], #searchBtn {
+  input[type="search"],
+  input[type="date"],
+  .btn {
     width: 100%;
+    padding: 10px 10px;
+    font-size: 1rem;
   }
   .controls button {
     flex: 1 1 100%;
     margin-top: 6px;
   }
   .day {
-    min-width: 80px;
-    padding: 8px;
+    min-width: 70px;
+    padding: 8px 4px;
   }
 }
