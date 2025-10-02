@@ -21,6 +21,8 @@ body {
   justify-content: center;
   padding: 24px;
   transition: background 1s ease-in-out;
+  /* CRITICAL FIX for mobile padding issue */
+  overflow-x: hidden; 
 }
 
 .app {
