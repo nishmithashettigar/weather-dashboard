@@ -159,8 +159,6 @@ input[type="search"] {
   100% { transform: scale(1); }
 }
 
-/* Responsive Media Queries */
-
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: 1fr;
@@ -207,6 +205,9 @@ input[type="search"] {
 }
 
 @media (max-width: 400px) {
+  body {
+    padding: 16px;
+  }
   header {
     align-items: center;
     text-align: center;
