@@ -220,7 +220,7 @@ input[type="search"] {
   .forecast {
     gap: 10px;
     margin: 0 -14px; 
-    padding: 8px 14px 0 14px; 
+    padding: 8px 14px 8px 14px; 
   }
   
   .card:has(.forecast) {
